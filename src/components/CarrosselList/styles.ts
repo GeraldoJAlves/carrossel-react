@@ -22,6 +22,7 @@ export const CarrosselContainer = styled.div`
   flex:none;
   width: 100%;
   scroll-snap-align: start;
+  pointer-events: none;
 `;
 
 export const CarrosselImage = styled.img`

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { WheelEvent } from "react";
 
 import {
   CarrosselWrapper,
@@ -11,6 +11,7 @@ import images from "./data";
 
 interface PropsItem {
   image: any;
+  key: number;
 }
 
 const CarrosselList: React.FC = () => {
@@ -22,11 +23,18 @@ const CarrosselList: React.FC = () => {
     );
   };
 
+  const eventWheel = (event: WheelEvent) => {
+    let x = 300;
+    x *= event.deltaY > 0 ? 1 : -1;
+    const element: any = event.target;
+    element.scrollBy(x, 0);
+  };
+
   return (
-    <CarrosselWrapper>
-      <List>
-        {images.map((item) => (
-          <CarrosselItem image={item} />
+    <CarrosselWrapper id="items">
+      <List onWheel={eventWheel}>
+        {images.map((item, index) => (
+          <CarrosselItem image={item} key={index} />
         ))}
       </List>
     </CarrosselWrapper>
