@@ -7,14 +7,16 @@ import {
   CarrosselImage,
 } from "./styles";
 
-import images from "./data";
-
 interface PropsItem {
   image: any;
   key: number;
 }
 
-const CarrosselList: React.FC = () => {
+interface PropsList {
+  images: Array<string>;
+}
+
+const CarrosselList: React.FC<PropsList> = ({ images }) => {
   const CarrosselItem: React.FC<PropsItem> = ({ image }) => {
     return (
       <CarrosselContainer>
@@ -24,10 +26,10 @@ const CarrosselList: React.FC = () => {
   };
 
   const eventWheel = (event: WheelEvent) => {
-    let x = 300;
-    x *= event.deltaY > 0 ? 1 : -1;
-    const element: any = event.target;
-    element.scrollBy(x, 0);
+    let scrollX = 300;
+    scrollX *= event.deltaY > 0 ? 1 : -1;
+    const divElement = event.target as HTMLDivElement;
+    divElement.scrollBy(scrollX, 0);
   };
 
   return (
