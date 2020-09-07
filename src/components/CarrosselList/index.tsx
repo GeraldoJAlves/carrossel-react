@@ -1,30 +1,35 @@
-import React from 'react';
+import React from "react";
 
-import { CarrosselContainer, List, CarrosselImage } from './styles';
+import {
+  CarrosselWrapper,
+  List,
+  CarrosselContainer,
+  CarrosselImage,
+} from "./styles";
 
-import images from './data';
+import images from "./data";
 
 interface PropsItem {
   image: any;
 }
 
 const CarrosselList: React.FC = () => {
-
-  const CarrosselItem: React.FC<PropsItem> = ({image}) => {
+  const CarrosselItem: React.FC<PropsItem> = ({ image }) => {
     return (
       <CarrosselContainer>
-        <CarrosselImage  src={image} />
+        <CarrosselImage src={image} />
       </CarrosselContainer>
     );
-  }
-
+  };
 
   return (
-    <List>
-      {images.map( (item) => (
-        <CarrosselItem image={item}/>
-      ))}
-    </List>
+    <CarrosselWrapper>
+      <List>
+        {images.map((item) => (
+          <CarrosselItem image={item} />
+        ))}
+      </List>
+    </CarrosselWrapper>
   );
 };
 
