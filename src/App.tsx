@@ -1,9 +1,15 @@
-import React from 'react';
-import CarrosselList from './components/CarrosselList';
+import React from "react";
+
+import GlobalStyles from "./styles/GlobalStyles";
+
+import CarrosselList from "./components/CarrosselList";
 
 function App() {
   return (
-    <CarrosselList />
+    <>
+      <CarrosselList />
+      <GlobalStyles />
+    </>
   );
 }
 
