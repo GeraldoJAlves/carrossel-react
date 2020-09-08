@@ -5,39 +5,80 @@ import {
   List,
   CarrosselContainer,
   CarrosselImage,
+  CarrosselTitle,
+  CarrosselDescription,
+  CarrosselPrevious,
+  CarrosselNext,
 } from "./styles";
 
 interface PropsItem {
-  image: any;
+  item: any;
+  previousClick: any;
+  nextClick: any;
   key: number;
 }
 
 interface PropsList {
-  images: Array<string>;
+  images: Array<any>;
 }
 
 const CarrosselList: React.FC<PropsList> = ({ images }) => {
-  const CarrosselItem: React.FC<PropsItem> = ({ image }) => {
+  const CarrosselItem: React.FC<PropsItem> = ({
+    item,
+    previousClick,
+    nextClick,
+  }) => {
     return (
       <CarrosselContainer>
-        <CarrosselImage src={image} />
+        <CarrosselTitle>{item.title}</CarrosselTitle>
+        <CarrosselImage src={item.src} />
+        <CarrosselDescription>{item.description}</CarrosselDescription>
+        <CarrosselPrevious onClick={previousClick} />
+        <CarrosselNext onClick={nextClick} />
       </CarrosselContainer>
     );
   };
+  const scrollList = (toLeft: boolean, reset?:boolean) => {
+    const element = document.getElementById("items");
+    if (element) {
 
-  const eventWheel = (event: WheelEvent) => {
-    let scrollX = 300;
-    scrollX *= event.deltaY > 0 ? 1 : -1;
-    const divElement = event.target as HTMLDivElement;
-    divElement.scrollBy(scrollX, 0);
+      if(reset && element.scrollLeft === (element.scrollWidth - document.body.clientWidth)) {
+        element.scrollLeft=0;
+        return;
+      }
+      element.scrollBy(toLeft ? 300 : -300,0);
+    }
   };
 
+  const eventWheel = (event: WheelEvent) => {
+    scrollList(event.deltaY < 0);
+  };
+
+  const scrollListToRight = () => {
+    scrollList(false);
+  };
+
+  const scrollListToLeft = () => {
+    scrollList(true);
+  };
+
+  setInterval(() => {
+    scrollList(true, true);
+  }, 10000);
+
   return (
-    <CarrosselWrapper id="items">
-      <List onWheel={eventWheel}>
-        {images.map((item, index) => (
-          <CarrosselItem image={item} key={index} />
-        ))}
+    <CarrosselWrapper>
+      <List id="items" className="items" onWheel={eventWheel}>
+        {images.map((item, index) => {
+          return (
+            <CarrosselItem
+              item={item}
+              key={index}
+              previousClick={() => scrollListToRight()}
+              nextClick={() => scrollListToLeft()}
+            />
+          );
+        })}
       </List>
     </CarrosselWrapper>
   );
