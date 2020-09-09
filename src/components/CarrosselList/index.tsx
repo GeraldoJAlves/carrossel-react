@@ -19,6 +19,8 @@ interface PropsItem {
   previousClick: any;
   nextClick: any;
   key: number;
+  withoutPrev?: boolean;
+  withoutNext?: boolean;
 }
 
 interface PropsList {
@@ -30,6 +32,8 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     item,
     previousClick,
     nextClick,
+    withoutPrev,
+    withoutNext,
   }) => {
     return (
       <CarrosselContainer>
@@ -37,12 +41,16 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
         <CarrosselTitle>{item.title}</CarrosselTitle>
         <CarrosselImage src={item.src} />
         <CarrosselDescription>{item.description}</CarrosselDescription>
-        <CarrosselPrevious onClick={previousClick}>
-          <PreviousIcon />
-        </CarrosselPrevious>
+        { !withoutPrev ? (
+          <CarrosselPrevious onClick={previousClick}>
+            <PreviousIcon />
+          </CarrosselPrevious>
+        ): null }
+        { !withoutNext ? (
         <CarrosselNext onClick={nextClick} >
           <NextIcon />
         </CarrosselNext>
+        ): null}
       </CarrosselContainer>
     );
   };
@@ -110,6 +118,8 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
               key={index}
               previousClick={() => scrollListToRight()}
               nextClick={() => scrollListToLeft()}
+              withoutNext={index === (images.length-1)}
+              withoutPrev={index === 0}
             />
           );
         })}
