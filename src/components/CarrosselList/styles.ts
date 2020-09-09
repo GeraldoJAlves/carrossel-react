@@ -12,7 +12,7 @@ export const CarrosselWrapper = styled.div`
 
 export const List = styled.div`
   display: flex;
-  overflow-x: auto;
+  overflow-x: hidden;
   border-radius: 20px;
   width: 100vw;
   height: 100vh;
@@ -140,7 +140,7 @@ export const CarrosselProgress = styled.div`
   background: #5cfc53;
 
   &.animation {
-    animation: mymove 5s infinite;
+    animation: mymove 5s 1;
   }
 
   @keyframes mymove {
