@@ -29,9 +29,11 @@ export const CarrosselContainer = styled.div`
   width: 100%;
   height: 65%;
   scroll-snap-align: start;
+  margin-top: -100px;
 
   @media (min-width: 900px) {
     width: 100%;
+    margin-top: 0px;
   }
 
 
