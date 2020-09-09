@@ -35,18 +35,19 @@ export const CarrosselContainer = styled.div`
     width: 100%;
     margin-top: 0px;
   }
-
-
 `;
 
 export const CarrosselTitle = styled.h1`
   position: absolute;
+  margin-top: 15px;
   left: 0;
   right: 0;
   font-size: 40px;
-  color: #5cfc53;
+  color: #26e7e1;
   text-align: center;
-  text-shadow: 1px 1px 5px black;
+  -webkit-text-stroke: .5px #79cc33;
+  text-shadow: 0px 0px 2px black;
+  font-family: get_schwifty;
 
   @media (min-width: 900px) {
     font-size: 70px;
@@ -58,9 +59,14 @@ export const CarrosselDescription = styled.p`
   left: 0;
   right: 0;
   font-size: 20px;
-  color: #5cfc53;
+  color: #26e7e1;
+  -webkit-text-stroke: .1px #79cc33;
   text-align: center;
+  padding: 10px 20px 0px;
+  font-weight: 700;
 
+  font-family: get_schwifty;
+  font-weight: 700;
   @media (min-width: 900px) {
     font-size: 30px;
   }
@@ -139,7 +145,7 @@ export const CarrosselProgress = styled.div`
   position: absolute;
   left: 0;
   top: -3px;
-  background: #5cfc53;
+  background: #79cc33;
 
   &.animation {
     animation: mymove 5s 1;

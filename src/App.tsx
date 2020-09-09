@@ -4,6 +4,8 @@ import GlobalStyles from "./styles/GlobalStyles";
 
 import Carrossel from "./pages/Carrossel";
 
+import './App.css';
+
 function App() {
   return (
     <>
