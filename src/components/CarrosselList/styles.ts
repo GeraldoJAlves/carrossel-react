@@ -60,7 +60,6 @@ export const CarrosselDescription = styled.p`
   right: 0;
   font-size: 20px;
   color: #26e7e1;
-  -webkit-text-stroke: .1px #79cc33;
   text-align: center;
   padding: 10px 20px 0px;
   font-weight: 700;
@@ -145,7 +144,7 @@ export const CarrosselProgress = styled.div`
   position: absolute;
   left: 0;
   top: -3px;
-  background: #79cc33;
+  background: #26e7e1;
 
   &.animation {
     animation: mymove 5s 1;
