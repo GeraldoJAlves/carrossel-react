@@ -57,16 +57,13 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
   const scrollList = (toLeft: boolean, reset?:boolean) => {
     const element = document.getElementById("items");
     if (element) {
-
       if(reset && element.scrollLeft === (element.scrollWidth - document.body.clientWidth)) {
-        element.scrollLeft=0;
+        element.scrollTo(0,0);
         return;
       }
       element.scrollBy(toLeft ? 300 : -300,0);
     }
   };
-
-  let timeScroll:any = null;
 
   const resetAnimtion = () => {
     const items = document.querySelectorAll('.content');
@@ -76,6 +73,8 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       item.classList.add('animation');
     });
   }
+
+  let timeScroll:any = null;
 
   let defineScroll = () => {
     if( !timeScroll) {
@@ -100,7 +99,6 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
   };
 
   const scroll = (event: any) => {
-    console.log('clean');
     clearInterval(timeScroll);
     timeScroll = null;
     defineScroll();

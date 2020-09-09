@@ -12,14 +12,17 @@ export const CarrosselWrapper = styled.div`
 
 export const List = styled.div`
   display: flex;
-  overflow-x: hidden;
-  border-radius: 20px;
+  overflow-x: auto;
   width: 100vw;
   height: 100vh;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  align-items:center;
+  align-items:start;
+
+  @media (min-width: 900px) {
+    overflow-x: hidden;
+  }
 `;
 
 export const CarrosselContainer = styled.div`
@@ -27,26 +30,27 @@ export const CarrosselContainer = styled.div`
   pointer-events: none;
   flex: none;
   width: 100%;
-  height: 65%;
+  height: 70%;
   scroll-snap-align: start;
-  margin-top: -100px;
+  margin-top: 3px;
 
   @media (min-width: 900px) {
+
+    height: 80%;
     width: 100%;
-    margin-top: 0px;
   }
 `;
 
 export const CarrosselTitle = styled.h1`
   position: absolute;
-  margin-top: 15px;
+  margin-top: 30px;
   left: 0;
   right: 0;
   font-size: 40px;
   color: #26e7e1;
   text-align: center;
   -webkit-text-stroke: .5px #79cc33;
-  text-shadow: 0px 0px 2px black;
+  text-shadow: 0px 0px 10px black;
   font-family: get_schwifty;
 
   @media (min-width: 900px) {
