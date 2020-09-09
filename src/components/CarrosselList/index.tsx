@@ -54,10 +54,11 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       </CarrosselContainer>
     );
   };
+
   const scrollList = (toLeft: boolean, reset?:boolean) => {
     const element = document.getElementById("items");
     if (element) {
-      if(reset && element.scrollLeft === (element.scrollWidth - document.body.clientWidth)) {
+      if(reset && Math.ceil(element.scrollLeft) >= (element.scrollWidth - window.innerWidth)) {
         element.scrollTo(0,0);
         return;
       }
