@@ -1,4 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+import { FaArrowCircleLeft, FaArrowCircleRight } from 'react-icons/fa';
 
 export const CarrosselWrapper = styled.div`
   width: 100vw;
@@ -31,21 +33,28 @@ export const CarrosselContainer = styled.div`
   @media (min-width: 900px) {
     width: 100%;
   }
+
+
 `;
 
 export const CarrosselTitle = styled.h1`
-  margin-top: -30px;
+  position: absolute;
+  left: 0;
+  right: 0;
   font-size: 40px;
   color: #5cfc53;
   text-align: center;
+  text-shadow: 1px 1px 5px black;
 
   @media (min-width: 900px) {
-    margin-top: -60px;
     font-size: 70px;
   }
 `;
 
 export const CarrosselDescription = styled.p`
+  position: absolute;
+  left: 0;
+  right: 0;
   font-size: 20px;
   color: #5cfc53;
   text-align: center;
@@ -65,16 +74,77 @@ export const CarrosselImage = styled.img`
 export const CarrosselPrevious = styled.div`
   pointer-events:all;
   position: absolute;
+
+  display: flex;
+  align-items:center;
+  justify-content:start;
   top: 0;
   bottom: 0;
-  width: 40%;
+  width: 30%;
+  transition: all 2s;
+  &:hover {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.5), rgba(0,0,0,0));
+    svg {
+      fill: rgba(255,255,255,0.2);
+    }
+  }
 `;
 
 export const CarrosselNext = styled.div`
-pointer-events:all;
+  pointer-events:all;
   position: absolute;
+  display: flex;
+  align-items:center;
+  justify-content:flex-end;
   top: 0;
   bottom: 0;
   right: 0;
   width: 30%;
+  &:hover {
+    background-image: linear-gradient(to right, rgba(0,0,0,0) , rgba(0,0,0,0.5));
+    svg {
+      fill: rgba(255,255,255,0.2);
+    }
+  }
+`;
+
+const generalIconCSS = css`
+  width: 0px;
+  height: 0px;
+  fill: rgba(255,255,255,0.05);
+  transition: fill 0.5s;
+  &:hover {
+    fill: rgba(255,255,255,0.1);
+  }
+
+  @media (min-width: 900px){
+    width: 50px;
+    height: 50px;
+  }
+`;
+
+export const NextIcon = styled(FaArrowCircleRight)`
+  ${generalIconCSS}
+  margin-right: 20px;
+`;
+export const PreviousIcon = styled(FaArrowCircleLeft)`
+  ${generalIconCSS}
+  margin-left: 20px;
+`;
+
+export const CarrosselProgress = styled.div`
+  height: 3px;
+  position: absolute;
+  left: 0;
+  top: -3px;
+  background: #5cfc53;
+
+  &.animation {
+    animation: mymove 5s infinite;
+  }
+
+  @keyframes mymove {
+    from {width: 0vw;}
+    to {width: 100vw;}
+  }
 `;

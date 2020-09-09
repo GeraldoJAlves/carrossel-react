@@ -9,6 +9,9 @@ import {
   CarrosselDescription,
   CarrosselPrevious,
   CarrosselNext,
+  CarrosselProgress,
+  NextIcon,
+  PreviousIcon
 } from "./styles";
 
 interface PropsItem {
@@ -30,11 +33,16 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
   }) => {
     return (
       <CarrosselContainer>
+        <CarrosselProgress className='content animation' />
         <CarrosselTitle>{item.title}</CarrosselTitle>
         <CarrosselImage src={item.src} />
         <CarrosselDescription>{item.description}</CarrosselDescription>
-        <CarrosselPrevious onClick={previousClick} />
-        <CarrosselNext onClick={nextClick} />
+        <CarrosselPrevious onClick={previousClick}>
+          <PreviousIcon />
+        </CarrosselPrevious>
+        <CarrosselNext onClick={nextClick} >
+          <NextIcon />
+        </CarrosselNext>
       </CarrosselContainer>
     );
   };
@@ -50,6 +58,27 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     }
   };
 
+  let timeScroll:any = null;
+
+  const resetAnimtion = () => {
+    const items = document.querySelectorAll('.content');
+    items.forEach( (item) => {
+      item.classList.remove('animation');
+      void item.clientWidth;
+      item.classList.add('animation');
+    });
+  }
+
+  let defineScroll = () => {
+    if( !timeScroll) {
+      resetAnimtion();
+      timeScroll = setInterval(() => {
+        scrollList(true, true);
+        console.log('scrolling');
+      }, 5000);
+    }
+  }
+
   const eventWheel = (event: WheelEvent) => {
     scrollList(event.deltaY < 0);
   };
@@ -62,13 +91,18 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     scrollList(true);
   };
 
-  setInterval(() => {
-    scrollList(true, true);
-  }, 10000);
+  const scroll = (event: any) => {
+    console.log('clean');
+    clearInterval(timeScroll);
+    timeScroll = null;
+    defineScroll();
+  }
+
+  defineScroll();
 
   return (
     <CarrosselWrapper>
-      <List id="items" className="items" onWheel={eventWheel}>
+      <List id="items" className="items" onWheel={eventWheel} onScroll={scroll} >
         {images.map((item, index) => {
           return (
             <CarrosselItem
