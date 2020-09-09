@@ -19,4 +19,4 @@ Projeto criado com react com para praticar funções com o scrollbar.
 
 ## Result
 
-https://elegant-rosalind-97a475.netlify.app/
+https://carrossel-react.netlify.app/
