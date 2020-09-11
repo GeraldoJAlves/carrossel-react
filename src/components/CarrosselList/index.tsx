@@ -36,6 +36,20 @@ let lastDeltaY: number = 0;
 let timerOnScroll: any = null;
 let lastScrollLeft: number = 0;
 
+const stopAnimation = () => {
+  const animation = document.querySelector('#items .animation:not(.stop-animation)');
+  if (animation) {
+    animation.classList.add('stop-animation');
+  }
+}
+
+const resumeAnimation = () => {
+  const animation = document.querySelector('#items .animation.stop-animation');
+  if (animation) {
+    animation.classList.remove('stop-animation');
+  }
+}
+
 const CarrosselList: React.FC<PropsList> = ({ images }) => {
   const CarrosselItem: React.FC<PropsItem> = ({
     item,
@@ -123,6 +137,8 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     );
   };
 
+  const [currentItem, setCurrentItem] = useState<number>(0);
+
   const scrollListTo = (indexItem: number) => {
     const element = document.querySelector(
       `#items>div:nth-child(${indexItem + 1})`
@@ -134,8 +150,6 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       });
     }
   };
-
-  const [currentItem, setCurrentItem] = useState<number>(0);
 
   const nextItem = (reset?: boolean) => {
     const totalItems = images.length - 1;
@@ -153,7 +167,6 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       clearTimeout(timerOnWhell);
       lastDeltaY = event.deltaY;
       timerOnWhell = setTimeout(() => {
-        console.log("wheel", lastDeltaY);
         if (lastDeltaY < 0) {
           nextItem();
         } else {
@@ -167,6 +180,8 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       const element = e.target as HTMLDivElement;
       clearTimeout(timerOnScroll);
       lastScrollLeft = element.scrollLeft;
+      stopAnimation();
+
       timerOnScroll = setTimeout(() => {
         const currentOffset = getOffsetItem();
         if (currentOffset > lastScrollLeft) {
@@ -174,6 +189,7 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
         } else if (currentOffset < lastScrollLeft) {
           nextItem();
         }
+        resumeAnimation();
       }, 400);
   };
 
@@ -185,7 +201,6 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     if (element) {
       return element.offsetLeft;
     }
-
     return 0;
   };
 
@@ -193,8 +208,10 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     <CarrosselWrapper>
       <List id="items" className="items" onWheel={onWheel} onScroll={onScroll}>
         {images.map((item, index) => {
+          let time = 5;
           if (item.description) {
-            //console.log(index,item.description.trim().split(' ').length);
+            const tot = item.description.trim().split(' ').length;
+            time = Math.round(tot * .42);
           }
           return (
             <CarrosselItem
@@ -206,13 +223,12 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
               withoutPrev={index === 0}
               activeItem={index === currentItem}
               onEndAnimtaion={() => {
-                console.log("end", currentItem);
                 nextItem(true);
               }}
               onStartAnimation={() => {
                 scrollListTo(currentItem);
-                console.log("start", currentItem);
               }}
+              timeAnimation={time}
             />
           );
         })}
