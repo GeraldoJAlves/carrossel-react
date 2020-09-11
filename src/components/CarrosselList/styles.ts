@@ -153,6 +153,9 @@ export const CarrosselProgress = styled.div`
   &.animation {
     animation: mymove 5s 1;
   }
+  &.stop-animation {
+    animation-play-state: paused;
+  }
 
   @keyframes mymove {
     from {width: 0vw;}
