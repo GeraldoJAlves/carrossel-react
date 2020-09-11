@@ -1,4 +1,4 @@
-import React, { WheelEvent } from "react";
+import React, { WheelEvent, useState } from "react";
 
 import {
   CarrosselWrapper,
@@ -19,13 +19,22 @@ interface PropsItem {
   previousClick: any;
   nextClick: any;
   key: number;
+  onEndAnimtaion: any;
+  onStartAnimation: any;
+  timeAnimation?: number;
   withoutPrev?: boolean;
   withoutNext?: boolean;
+  activeItem?: boolean;
 }
 
 interface PropsList {
   images: Array<any>;
 }
+
+let timerOnWhell: any = null;
+let lastDeltaY: number = 0;
+let timerOnScroll: any = null;
+let lastScrollLeft: number = 0;
 
 const CarrosselList: React.FC<PropsList> = ({ images }) => {
   const CarrosselItem: React.FC<PropsItem> = ({
@@ -34,20 +43,79 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     nextClick,
     withoutPrev,
     withoutNext,
+    activeItem,
+    onEndAnimtaion,
+    onStartAnimation,
+    timeAnimation,
   }) => {
+    const [isPausedAnimation, setIsPausedAnimation] = useState(false);
+    const animationDuration =
+      timeAnimation && timeAnimation > 0 ? timeAnimation : 5;
+
+    let stopClickScroll: boolean = false;
+    let mouseHold = false;
+    let timeMouseHold: number = 0;
+
+    const holdMouse = () => {
+      if (mouseHold) {
+        timeMouseHold += 250;
+        if (timeMouseHold > 500) {
+          stopClickScroll = true;
+        }
+        setTimeout(holdMouse, 250);
+      }
+    };
+
+    const onMouseDown = () => {
+      mouseHold = true;
+      setIsPausedAnimation(true);
+      holdMouse();
+    };
+
+    const onMouseUp = () => {
+      setIsPausedAnimation(false);
+      mouseHold = false;
+      timeMouseHold = 0;
+    };
+
     return (
-      <CarrosselContainer onMouseDown={() => console.log("hold mouse")}>
-        <CarrosselProgress className="content animation" />
+      <CarrosselContainer
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onTouchStart={onMouseDown}
+        onTouchEnd={onMouseUp}
+      >
+        <CarrosselProgress
+          className={`
+            ${activeItem ? "animation" : ""}
+            ${isPausedAnimation ? "stop-animation" : ""}
+          `}
+          onAnimationEnd={onEndAnimtaion}
+          onAnimationStart={onStartAnimation}
+          style={
+            activeItem ? { animationDuration: `${animationDuration}s` } : {}
+          }
+        />
         <CarrosselTitle>{item.title}</CarrosselTitle>
-        <CarrosselImage src={item.src} />
+        <CarrosselImage src={item.src} alt={item.title} />
         <CarrosselDescription>{item.description}</CarrosselDescription>
         {!withoutPrev ? (
-          <CarrosselPrevious onClick={previousClick}>
+          <CarrosselPrevious
+            onClick={() => {
+              !stopClickScroll && previousClick();
+              stopClickScroll = false;
+            }}
+          >
             <PreviousIcon />
           </CarrosselPrevious>
         ) : null}
         {!withoutNext ? (
-          <CarrosselNext onClick={nextClick}>
+          <CarrosselNext
+            onClick={() => {
+              !stopClickScroll && nextClick();
+              stopClickScroll = false;
+            }}
+          >
             <NextIcon />
           </CarrosselNext>
         ) : null}
@@ -55,134 +123,96 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     );
   };
 
-  const scrollList = (toLeft: boolean, reset?: boolean) => {
-    const element = document.getElementById("items");
+  const scrollListTo = (indexItem: number) => {
+    const element = document.querySelector(
+      `#items>div:nth-child(${indexItem + 1})`
+    );
     if (element) {
-      if (
-        reset &&
-        Math.ceil(element.scrollLeft) >= element.scrollWidth - window.innerWidth
-      ) {
-        element.scrollTo(0, 0);
-        return;
-      }
-      element.scrollBy(toLeft ? 300 : -300, 0);
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   };
 
-  const resetAnimtion = () => {
-    const items = document.querySelectorAll(".content");
-    items.forEach((item) => {
-      item.classList.remove("animation");
-      void item.clientWidth;
-      item.classList.add("animation");
-    });
+  const [currentItem, setCurrentItem] = useState<number>(0);
+
+  const nextItem = (reset?: boolean) => {
+    const totalItems = images.length - 1;
+    if (currentItem === totalItems) {
+      reset && setCurrentItem(0);
+      return;
+    }
+    setCurrentItem(currentItem + 1);
   };
 
-  const stopAnimtion = () => {
-    const items = document.querySelectorAll(".content");
-    items.forEach((item) => {
-      item.classList.add("stop-animation");
-    });
-  };
+  const previousItem = () => currentItem > 0 && setCurrentItem(currentItem - 1);
 
-  const resumeAnimation = () => {
-    const items = document.querySelectorAll(".content");
-    items.forEach((item) => {
-      item.classList.remove("stop-animation");
-    });
-  };
-
-  let timeScroll: any = null;
-
-  let defineScroll = () => {
-    const limitTime = 5000;
-    let status = 0;
-    if (!timeScroll) {
-      resetAnimtion();
-      timeScroll = setInterval(() => {
-        if(!mouse) {
-          status +=500;
-          if(Math.ceil(status) >= limitTime){
-            scrollList(true, true);
-            status = 0;
-          }
+  const onWheel = (event: WheelEvent) => {
+    if (event.deltaY !== 0) {
+      clearTimeout(timerOnWhell);
+      lastDeltaY = event.deltaY;
+      timerOnWhell = setTimeout(() => {
+        console.log("wheel", lastDeltaY);
+        if (lastDeltaY < 0) {
+          nextItem();
+        } else {
+          previousItem();
         }
-      }, 490);
+      }, 300);
     }
   };
 
-  const eventWheel = (event: WheelEvent) => {
-    scrollList(event.deltaY < 0);
+  const onScroll = (e: any) => {
+      const element = e.target as HTMLDivElement;
+      clearTimeout(timerOnScroll);
+      lastScrollLeft = element.scrollLeft;
+      timerOnScroll = setTimeout(() => {
+        const currentOffset = getOffsetItem();
+        if (currentOffset > lastScrollLeft) {
+          previousItem();
+        } else if (currentOffset < lastScrollLeft) {
+          nextItem();
+        }
+      }, 400);
   };
 
-  const scrollListToRight = () => {
-    !notScroll && scrollList(false);
-    notScroll = false;
-  };
+  const getOffsetItem = () => {
+    const element = document.querySelector(
+      `#items > div:nth-child(${currentItem + 1})`
+    ) as HTMLDivElement;
 
-  const scrollListToLeft = () => {
-    !notScroll && scrollList(true);
-    notScroll = false;
-  };
-
-  const scroll = (event: any) => {
-    clearInterval(timeScroll);
-    timeScroll = null;
-    defineScroll();
-  };
-
-  defineScroll();
-
-  let mouse= false;
-  let notScroll=false;
-  let timeMouseHold = 0;
-  const holdMouse = () => {
-    if (mouse) {
-      timeMouseHold += 500;
-      if( timeMouseHold > 1000) {
-        notScroll = true;
-      }
-      setTimeout(holdMouse,500);
+    if (element) {
+      return element.offsetLeft;
     }
-  }
+
+    return 0;
+  };
 
   return (
     <CarrosselWrapper>
-      <List
-        id="items"
-        className="items"
-        onWheel={eventWheel}
-        onScroll={scroll}
-        onMouseDown={()=> {
-          mouse = true;
-          stopAnimtion();
-          holdMouse();
-        }}
-        onMouseUp={()=> {
-          resumeAnimation();
-          mouse = false;
-          timeMouseHold = 0;
-        }}
-        onTouchStart={()=> {
-          mouse = true;
-          stopAnimtion();
-          holdMouse();
-        }}
-        onTouchEnd={()=> {
-          resumeAnimation();
-          mouse = false;
-          timeMouseHold = 0;
-        }}
-      >
+      <List id="items" className="items" onWheel={onWheel} onScroll={onScroll}>
         {images.map((item, index) => {
+          if (item.description) {
+            //console.log(index,item.description.trim().split(' ').length);
+          }
           return (
             <CarrosselItem
               item={item}
               key={index}
-              previousClick={() => scrollListToRight()}
-              nextClick={() => scrollListToLeft()}
+              previousClick={() => previousItem()}
+              nextClick={() => nextItem()}
               withoutNext={index === images.length - 1}
               withoutPrev={index === 0}
+              activeItem={index === currentItem}
+              onEndAnimtaion={() => {
+                console.log("end", currentItem);
+                nextItem(true);
+              }}
+              onStartAnimation={() => {
+                scrollListTo(currentItem);
+                console.log("start", currentItem);
+              }}
             />
           );
         })}

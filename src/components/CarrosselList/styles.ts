@@ -21,13 +21,12 @@ export const List = styled.div`
   align-items:start;
 
   @media (min-width: 900px) {
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 `;
 
 export const CarrosselContainer = styled.div`
   position: relative;
-  pointer-events: none;
   flex: none;
   width: 100%;
   height: 70%;
@@ -83,7 +82,6 @@ export const CarrosselImage = styled.img`
 
 
 export const CarrosselPrevious = styled.div`
-  pointer-events:all;
   position: absolute;
 
   display: flex;
@@ -102,7 +100,6 @@ export const CarrosselPrevious = styled.div`
 `;
 
 export const CarrosselNext = styled.div`
-  pointer-events:all;
   position: absolute;
   display: flex;
   align-items:center;
@@ -151,13 +148,15 @@ export const CarrosselProgress = styled.div`
   background: #26e7e1;
 
   &.animation {
-    animation: mymove 5s 1;
+    animation-name: progressBar;
+    animation-iteration-count: 1;
   }
+
   &.stop-animation {
     animation-play-state: paused;
   }
 
-  @keyframes mymove {
+  @keyframes progressBar {
     from {width: 0vw;}
     to {width: 100vw;}
   }
