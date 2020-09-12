@@ -71,10 +71,7 @@ const scrollListTo = (indexItem: number) => {
     `#items>div:nth-child(${indexItem + 1})`
   );
   if (element) {
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    element.scrollIntoView(true);
   }
 };
 
