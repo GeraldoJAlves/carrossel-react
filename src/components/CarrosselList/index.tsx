@@ -28,7 +28,7 @@ interface PropsItem {
 }
 
 interface PropsList {
-  images: Array<any>;
+  items: Array<any>;
 }
 
 let timerOnWhell: any = null;
@@ -50,7 +50,35 @@ const resumeAnimation = () => {
   }
 }
 
-const CarrosselList: React.FC<PropsList> = ({ images }) => {
+const diffOffsetToCurrentItem = (currentItem:number, lastScrollLeft:number) => {
+  const element = document.querySelector(
+    `#items > div:nth-child(${currentItem + 1})`
+  ) as HTMLDivElement;
+  
+  if (!element) {
+    return currentItem;
+  }
+  const offset = Math.ceil(element.offsetLeft);
+  if (offset === lastScrollLeft) {
+    return currentItem;
+  }
+  const offsetWidth = Math.ceil(element.offsetWidth);
+  return Math.trunc(lastScrollLeft / offsetWidth);
+};
+
+const scrollListTo = (indexItem: number) => {
+  const element = document.querySelector(
+    `#items>div:nth-child(${indexItem + 1})`
+  );
+  if (element) {
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+};
+
+const CarrosselList: React.FC<PropsList> = ({ items }) => {
   const CarrosselItem: React.FC<PropsItem> = ({
     item,
     previousClick,
@@ -73,7 +101,7 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
     const holdMouse = () => {
       if (mouseHold) {
         timeMouseHold += 250;
-        if (timeMouseHold > 500) {
+        if (timeMouseHold >= 500) {
           stopClickScroll = true;
         }
         setTimeout(holdMouse, 250);
@@ -138,21 +166,10 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
   };
 
   const [currentItem, setCurrentItem] = useState<number>(0);
+  const totalItems = items.length - 1;
 
-  const scrollListTo = (indexItem: number) => {
-    const element = document.querySelector(
-      `#items>div:nth-child(${indexItem + 1})`
-    );
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  };
 
   const nextItem = (reset?: boolean) => {
-    const totalItems = images.length - 1;
     if (currentItem === totalItems) {
       reset && setCurrentItem(0);
       return;
@@ -183,31 +200,22 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
       stopAnimation();
 
       timerOnScroll = setTimeout(() => {
-        const currentOffset = getOffsetItem();
-        if (currentOffset > lastScrollLeft) {
-          previousItem();
-        } else if (currentOffset < lastScrollLeft) {
-          nextItem();
+        lastScrollLeft = Math.ceil(lastScrollLeft);
+        const itemScroll = diffOffsetToCurrentItem(currentItem, lastScrollLeft);
+        if (itemScroll === currentItem) {
+          resumeAnimation();
+          return;
         }
+        setCurrentItem(itemScroll);
         resumeAnimation();
       }, 400);
   };
 
-  const getOffsetItem = () => {
-    const element = document.querySelector(
-      `#items > div:nth-child(${currentItem + 1})`
-    ) as HTMLDivElement;
-
-    if (element) {
-      return element.offsetLeft;
-    }
-    return 0;
-  };
 
   return (
     <CarrosselWrapper>
-      <List id="items" className="items" onWheel={onWheel} onScroll={onScroll}>
-        {images.map((item, index) => {
+      <List id="items" onWheel={onWheel} onScroll={onScroll}>
+        {items.map((item, index) => {
           let time = 5;
           if (item.description) {
             const tot = item.description.trim().split(' ').length;
@@ -219,7 +227,7 @@ const CarrosselList: React.FC<PropsList> = ({ images }) => {
               key={index}
               previousClick={() => previousItem()}
               nextClick={() => nextItem()}
-              withoutNext={index === images.length - 1}
+              withoutNext={index === totalItems}
               withoutPrev={index === 0}
               activeItem={index === currentItem}
               onEndAnimtaion={() => {
